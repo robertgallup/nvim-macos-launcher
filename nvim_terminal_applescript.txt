@@ -1,0 +1,42 @@
+# Automator Applescript Application for drag and drop access to NeoVim using MacOS Terminal
+# By default, the terminal window will close following exit from NeoVim. To change
+# behavior so that the terminal window doesn't close, set exitOption to false.
+
+on run {input, parameters}
+	
+	# The NeoVim command line
+	set commandLine to "nvim -p"
+	set exitOption to true
+	
+	# Set exit string based on the option
+	if exitOption then
+		set exitString to ";exit"
+	else
+		set exitString to none
+	end if
+	
+	# Create a list of selected files
+	set fileList to ""
+	if input is not {} then
+		repeat with theNextFile in input
+			set theFile to " " & quoted form of POSIX path of theNextFile
+			set fileList to fileList & theFile
+		end repeat
+	end if
+	
+	# Build the command line to run NeoVim
+	set theCommand to commandLine & fileList
+	
+	# Activate the Terminal app, then look for an available window and
+	# launch NeoVim there. If no available windows, just run the script
+	# which creates a new window.
+	tell application "Terminal"
+		activate
+		if (exists window 1) and not busy of window 1 then
+			do script theCommand in window 1
+		else
+			do script theCommand & exitString
+		end if
+	end tell
+end run
+

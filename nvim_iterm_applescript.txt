@@ -1,0 +1,48 @@
+# Automator Applescript Application for drag and drop access to NeoVim using iTerm2
+# By default, the terminal window will close following exit from NeoVim. To change
+# behavior so that the terminal window doesn't close, set exitOption to false.
+
+on run {input, parameters}
+	
+	# The NeoVim command line
+	set commandLine to "nvim -p"
+	set exitOption to true
+	
+	# Set exit string based on the option
+	if exitOption then
+		set exitString to " ; exit"
+	else
+		set exitString to none
+	end if
+	
+	# Create a list of selected files
+	set fileList to ""
+	if input is not {} then
+		repeat with theFile in input
+			set posixPath to " " & (quoted form of POSIX path of theFile)
+			set fileList to fileList & posixPath
+		end repeat
+	end if
+	
+	# If the shell is already running, create a new window
+	if application "iTerm" is running then
+		tell application "iTerm" to create window with default profile
+		
+		# Otherwise launch iTerm and wait until it finishes launching
+		# By default, this creates a window
+	else
+		tell application "iTerm" to activate
+		tell application "System Events"
+			repeat until visible of process "iTerm2" is true
+				delay 0.1
+			end repeat
+		end tell
+		# Wait a little longer to make sure iTerm2 has launched
+		delay 0.5
+	end if
+	
+	# With the current active window in iTerm, launch NeoVim
+	tell application "iTerm" to tell current session of current window to write text commandLine & fileList & exitString
+	
+end run
+
