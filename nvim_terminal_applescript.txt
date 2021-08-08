@@ -25,7 +25,7 @@ on run {input, parameters}
 	end if
 	
 	# Build the command line to run NeoVim
-	set theCommand to commandLine & fileList
+	set theCommand to commandLine & fileList & exitString
 	
 	# Activate the Terminal app, then look for an available window and
 	# launch NeoVim there. If no available windows, just run the script
@@ -35,8 +35,7 @@ on run {input, parameters}
 		if (exists window 1) and not busy of window 1 then
 			do script theCommand in window 1
 		else
-			do script theCommand & exitString
+			do script theCommand 
 		end if
 	end tell
 end run
-
