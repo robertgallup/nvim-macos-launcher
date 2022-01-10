@@ -28,8 +28,8 @@ on run {input, parameters}
 	if application "iTerm" is running then
 		tell application "iTerm" to create window with default profile
 		
-		# Otherwise launch iTerm and wait until it finishes launching
-		# By default, this creates a window
+	# Otherwise launch iTerm and wait until it finishes launching
+	# By default, this creates a window
 	else
 		tell application "iTerm" to activate
 		tell application "System Events"
